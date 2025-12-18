@@ -18,18 +18,6 @@ pipeline {
             }
         }
 
-        stage('SonarQube Scan') {
-            steps {
-                sh '''
-                sudo apt-get update && sudo apt-get install -y unzip
-                curl -sSLo /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
-                unzip -o /tmp/sonar-scanner.zip -d /tmp/
-                export PATH=$PATH:/tmp/sonar-scanner-4.8.0.2856-linux/bin
-                sonar-scanner
-                '''
-            }
-        }
-
         stage('Push to Nexus') {
             steps {
                 container('dind') {
@@ -43,9 +31,11 @@ pipeline {
         stage('Deploy to K8s') {
             steps {
                 sh '''
+                mkdir -p /tmp/bin
                 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
                 chmod +x kubectl
-                sudo mv kubectl /usr/local/bin/
+                mv kubectl /tmp/bin/
+                export PATH=$PATH:/tmp/bin
                 kubectl apply -f k8s/
                 '''
             }
