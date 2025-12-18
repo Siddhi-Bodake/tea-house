@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'tea-house'
-        NEXUS_URL = 'http://nexus.imcc.com/'
+        NEXUS_REGISTRY = 'nexus.imcc.com'
+        NEXUS_REPO = 'repository/docker-hosted'
         SONAR_URL = 'http://sonarqube.imcc.com/'
         NEXUS_CREDENTIALS = credentials('nexus-credentials')
         SONAR_TOKEN = credentials('sonar-token')
@@ -21,9 +22,9 @@ pipeline {
         stage('Push to Nexus') {
             steps {
                 container('dind') {
-                    sh 'echo $NEXUS_CREDENTIALS_PSW | docker login $NEXUS_URL -u $NEXUS_CREDENTIALS_USR --password-stdin'
-                    sh 'docker tag $DOCKER_IMAGE $NEXUS_URL/repository/docker-hosted/$DOCKER_IMAGE:latest'
-                    sh 'docker push $NEXUS_URL/repository/docker-hosted/$DOCKER_IMAGE:latest'
+                    sh 'docker login $NEXUS_REGISTRY -u $NEXUS_CREDENTIALS_USR -p $NEXUS_CREDENTIALS_PSW'
+                    sh 'docker tag $DOCKER_IMAGE $NEXUS_REGISTRY/$NEXUS_REPO/$DOCKER_IMAGE:latest'
+                    sh 'docker push $NEXUS_REGISTRY/$NEXUS_REPO/$DOCKER_IMAGE:latest'
                 }
             }
         }
