@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tea-house
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tea-house
+  template:
+    metadata:
+      labels:
+        app: tea-house
+    spec:
+      containers:
+      - name: tea-house
+        image: nexus.imcc.com/repository/docker-hosted/tea-house:latest
+        ports:
+        - containerPort: 80

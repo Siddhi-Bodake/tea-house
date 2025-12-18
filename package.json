@@ -1,0 +1,12 @@
+{
+  "name": "tea-house",
+  "version": "1.0.0",
+  "description": "Tea House Landing Page",
+  "main": "app/index.html",
+  "scripts": {
+    "start": "npx serve app",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
