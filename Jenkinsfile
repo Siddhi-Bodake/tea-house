@@ -21,7 +21,7 @@ pipeline {
         stage('SonarQube Scan') {
             steps {
                 sh '''
-                apt-get update && apt-get install -y unzip
+                sudo apt-get update && sudo apt-get install -y unzip
                 curl -sSLo /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
                 unzip -o /tmp/sonar-scanner.zip -d /tmp/
                 export PATH=$PATH:/tmp/sonar-scanner-4.8.0.2856-linux/bin
@@ -45,7 +45,7 @@ pipeline {
                 sh '''
                 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
                 chmod +x kubectl
-                mv kubectl /usr/local/bin/
+                sudo mv kubectl /usr/local/bin/
                 kubectl apply -f k8s/
                 '''
             }
