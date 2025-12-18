@@ -6,11 +6,6 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: sonar-scanner
-    image: sonarsource/sonar-scanner-cli
-    command: ["cat"]
-    tty: true
-
   - name: kubectl
     image: bitnami/kubectl:latest
     command: ["cat"]
@@ -64,20 +59,6 @@ spec:
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                container('sonar-scanner') {
-                    sh '''
-                        sonar-scanner \
-                          -Dsonar.projectKey=tea-house \
-                          -Dsonar.sources=. \
-                          -Dsonar.exclusions=node_modules/**,dist/** \
-                          -Dsonar.host.url=${SONAR_HOST} \
-                          -Dsonar.token=${SONAR_TOKEN}
-                    '''
-                }
-            }
-        }
 
         stage('Login to Nexus Registry') {
             steps {
