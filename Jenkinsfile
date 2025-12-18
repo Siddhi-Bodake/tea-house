@@ -1,27 +1,5 @@
 pipeline {
-    agent {
-        kubernetes {
-            yaml '''
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: dind
-    image: docker:dind
-    securityContext:
-      privileged: true
-    volumeMounts:
-    - name: docker-sock
-      mountPath: /var/run/docker.sock
-  - name: jnlp
-    image: jenkins/inbound-agent:3283.v92c105e0f819-7
-  volumes:
-  - name: docker-sock
-    hostPath:
-      path: /var/run/docker.sock
-'''
-        }
-    }
+    agent any
 
     environment {
         DOCKER_IMAGE = 'tea-house'
@@ -42,11 +20,9 @@ spec:
 
         stage('SonarQube Scan') {
             steps {
-                container('jnlp') {
-                    sh 'curl -sSLo /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip'
-                    sh 'unzip -o /tmp/sonar-scanner.zip -d /tmp/'
-                    sh 'export PATH=$PATH:/tmp/sonar-scanner-4.8.0.2856-linux/bin && sonar-scanner'
-                }
+                sh 'curl -sSLo /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip'
+                sh 'unzip -o /tmp/sonar-scanner.zip -d /tmp/'
+                sh 'export PATH=$PATH:/tmp/sonar-scanner-4.8.0.2856-linux/bin && sonar-scanner'
             }
         }
 
@@ -62,11 +38,9 @@ spec:
 
         stage('Deploy to K8s') {
             steps {
-                container('jnlp') {
-                    sh 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"'
-                    sh 'chmod +x kubectl && mv kubectl /usr/local/bin/'
-                    sh 'kubectl apply -f k8s/'
-                }
+                sh 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"'
+                sh 'chmod +x kubectl && mv kubectl /usr/local/bin/'
+                sh 'kubectl apply -f k8s/'
             }
         }
     }
